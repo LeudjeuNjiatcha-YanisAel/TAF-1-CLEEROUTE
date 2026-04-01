@@ -36,7 +36,7 @@ const articleRoutes = require('./Routes/articleRoutes');
 apps.use('/api/articles', articleRoutes);
 
 // Frontend — toutes les autres routes servent index.html
-apps.get('*', (req, res) => {
+apps.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 

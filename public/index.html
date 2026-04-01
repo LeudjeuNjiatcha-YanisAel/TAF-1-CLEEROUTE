@@ -546,7 +546,6 @@
       overflow-y: auto;
     }
 
-    /* RESPONSIVE */
     @media (max-width: 768px) {
       header { padding: 0 20px; }
       .hero { grid-template-columns: 1fr; padding: 40px 20px; gap: 32px; }
@@ -642,7 +641,6 @@
   </div>
 </div>
 
-<!-- MODAL VOIR -->
 <div class="overlay" id="view-overlay">
   <div class="modal">
     <div class="modal-header">
@@ -656,7 +654,6 @@
   </div>
 </div>
 
-<!-- TOASTS -->
 <div class="toast-wrap" id="toasts"></div>
 
 <script>
@@ -664,7 +661,6 @@
   let editingId = null;
   let searchTimer = null;
 
-  // ─── FETCH ───────────────────────────────────────────────
   async function api(path = '', opts = {}) {
     const res = await fetch(API + path, {
       headers: { 'Content-Type': 'application/json' },
@@ -677,7 +673,6 @@
     return res.json();
   }
 
-  // ─── LOAD ALL ─────────────────────────────────────────────
   async function loadArticles() {
     try {
       const data = await api();
@@ -696,7 +691,6 @@
     loadArticles();
   }
 
-  // ─── SEARCH ──────────────────────────────────────────────
   function handleSearch(val) {
     clearTimeout(searchTimer);
     if (!val.trim()) { loadArticles(); return; }
@@ -709,7 +703,6 @@
     }, 350);
   }
 
-  // ─── FILTER ──────────────────────────────────────────────
   async function handleFilter() {
     const cat = document.getElementById('filter-cat').value;
     const date = document.getElementById('filter-date').value;
@@ -723,7 +716,6 @@
     } catch (e) { toast(e.message, 'error'); }
   }
 
-  // ─── RENDER ──────────────────────────────────────────────
   function renderArticles(articles) {
     document.getElementById('section-count').textContent = `${articles.length} article${articles.length !== 1 ? 's' : ''}`;
     if (!articles.length) {
@@ -763,7 +755,6 @@
     document.getElementById('stat-authors').textContent = authors.size || 0;
   }
 
-  // ─── VIEW ─────────────────────────────────────────────────
   async function viewArticle(id) {
     try {
       const a = await api('/' + id);
@@ -780,7 +771,6 @@
 
   function closeView() { document.getElementById('view-overlay').classList.remove('open'); }
 
-  // ─── CREATE / EDIT FORM ───────────────────────────────────
   function openCreate() {
     editingId = null;
     document.getElementById('form-title').textContent = 'Nouvel article';
@@ -834,7 +824,6 @@
     } catch (e) { toast(e.message, 'error'); }
   }
 
-  // ─── DELETE ───────────────────────────────────────────────
   async function deleteArticle(id) {
     if (!confirm('Supprimer cet article ?')) return;
     try {
@@ -844,7 +833,6 @@
     } catch (e) { toast(e.message, 'error'); }
   }
 
-  // ─── TOAST ────────────────────────────────────────────────
   function toast(msg, type = 'info') {
     const el = document.createElement('div');
     el.className = `toast ${type}`;
@@ -853,7 +841,6 @@
     setTimeout(() => el.remove(), 3500);
   }
 
-  // ─── CLOSE ON OVERLAY CLICK ───────────────────────────────
   document.getElementById('form-overlay').addEventListener('click', function(e) {
     if (e.target === this) closeForm();
   });
@@ -861,7 +848,6 @@
     if (e.target === this) closeView();
   });
 
-  // ─── INIT ─────────────────────────────────────────────────
   loadArticles();
 </script>
 </body>
