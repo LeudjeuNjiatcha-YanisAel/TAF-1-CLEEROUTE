@@ -117,10 +117,6 @@ Documentation interactive de l'API Swagger : http://localhost:3000/api-docs
 
 ---
 
-## Référence de l'API REST
-
-La documentation Swagger interactive complète est accessible en direct à l'adresse suivante : [http://localhost:3000/api-docs](http://localhost:3000/api-docs).
-
 ### Synthèse des Endpoints
 
 | Méthode | Route | Description | Paramètres de requête (Query) / Corps (Body) |
