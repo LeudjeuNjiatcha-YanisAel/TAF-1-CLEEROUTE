@@ -1,18 +1,24 @@
 const mysql = require('mysql2');
-const db = mysql.createConnection({
+
+// Création du pool de connexion pour une meilleure robustesse et gestion des reconnexions
+const pool = mysql.createPool({
     host: 'localhost',
     user: 'api_user',
     password: '',
-    database: 'blog_db'
+    database: 'blog_db',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
-db.connect(err => {
-    if(err) {
-        console.error("Erreur de connexion à la base de données :", err.message);
-        return;
+// Test de connexion initial
+pool.getConnection((err, connection) => {
+    if (err) {
+        console.error("❌ Erreur de connexion à la base de données (MySQL) :", err.message);
+    } else {
+        console.log("✅ Base de données MySQL connectée avec succès (via Pool) !");
+        connection.release();
     }
-    console.log("Base De Donnees MySQL connectee ✅");
 });
 
-module.exports = db;
-
+module.exports = pool;

@@ -3,44 +3,93 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Machine Blog</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <title>Machine Blog — Gestion d'Articles</title>
+  
+  <!-- Polices Premium -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet"/>
+  
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family:'Outfit',sans-serif;}
-
+    /* VARIABLES ET DESIGN SYSTEM */
     :root {
-      --bg: #15151a;
-      --surface: #141416;
-      --surface2: #1c1c20;
-      --border: #2a2a30;
-      --accent: #3f97d2;
-      --accent2: #3670eb;
-      --text: #f0ede6;
-      --muted: #888890;
-      --danger: #e06060;
-      --success: #60c090;
-      --radius: 4px;
+      --bg: #0b0f19;
+      --bg-gradient: radial-gradient(circle at 50% 0%, #1e293b 0%, #0b0f19 70%);
+      --surface: rgba(22, 31, 48, 0.7);
+      --surface-hover: rgba(30, 41, 59, 0.8);
+      --surface-solid: #161f30;
+      --surface-input: #1e293b;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: #38bdf8;
+      
+      --accent: #38bdf8;
+      --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      
+      --text: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      
+      --danger: #f87171;
+      --danger-hover: #ef4444;
+      --success: #34d399;
+      --success-hover: #10b981;
+      
+      --radius-sm: 6px;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    html { scroll-behavior: smooth; }
+    /* GENERAL RESET & SCROLLBAR */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Outfit', sans-serif;
       background: var(--bg);
+      background-image: var(--bg-gradient);
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
+      line-height: 1.5;
     }
 
-    /* NOISE OVERLAY */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--surface-solid);
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* GLOWING AMBIENT BACKGROUND */
+    .glow-blob {
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(129, 140, 248, 0.05) 50%, transparent 100%);
       pointer-events: none;
-      z-index: 9999;
-      opacity: 0.4;
+      z-index: 0;
     }
 
     /* HEADER */
@@ -49,250 +98,489 @@
       padding: 0 40px;
       position: sticky;
       top: 0;
-      background: rgba(12,12,14,0.92);
-      backdrop-filter: blur(12px);
+      background: rgba(11, 15, 25, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       z-index: 100;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 64px;
+      height: 70px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo-icon {
+      background: var(--accent-gradient);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #0b0f19;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
     }
 
     .logo {
       font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      font-weight: 900;
-      color: var(--accent);
+      font-size: 1.6rem;
+      font-weight: 800;
       letter-spacing: -0.5px;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .logo span { font-style: italic; font-weight: 400; color: var(--text); }
+    .logo span {
+      font-weight: 400;
+      font-style: italic;
+      color: var(--text);
+      -webkit-text-fill-color: var(--text);
+    }
 
-    nav { display: flex; gap: 8px; align-items: center; }
+    nav {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
 
     nav button {
       background: none;
       border: 1px solid transparent;
-      color: var(--muted);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
       font-weight: 500;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      padding: 6px 14px;
+      padding: 8px 16px;
       cursor: pointer;
-      border-radius: var(--radius);
-      transition: all 0.2s;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
     }
 
-    nav button:hover { color: var(--text); border-color: var(--border); }
-    nav button.active { color: var(--accent); border-color: var(--accent); }
+    nav button:hover {
+      color: var(--text);
+      border-color: var(--border);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    nav button.active {
+      color: var(--accent);
+      border-color: rgba(56, 189, 248, 0.3);
+      background: rgba(56, 189, 248, 0.08);
+    }
 
     .btn-new {
-      background: var(--accent) !important;
-      color: var(--bg) !important;
-      border-color: var(--accent) !important;
+      background: var(--accent-gradient) !important;
+      color: #0b0f19 !important;
+      border: none !important;
       font-weight: 600 !important;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2);
     }
-    .btn-new:hover { background: var(--accent2) !important; }
+
+    .btn-new:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4) !important;
+    }
+
+    .btn-new:active {
+      transform: translateY(0);
+    }
 
     /* HERO */
     .hero {
-      padding: 80px 40px 60px;
+      position: relative;
+      padding: 60px 40px 40px;
       max-width: 1200px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: end;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 40px;
+      align-items: center;
       border-bottom: 1px solid var(--border);
+      z-index: 1;
     }
 
     .hero-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       color: var(--accent);
+      background: rgba(56, 189, 248, 0.08);
+      padding: 4px 12px;
+      border-radius: 50px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
       margin-bottom: 16px;
     }
 
     .hero h1 {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(2.5rem, 5vw, 4.5rem);
-      font-weight: 900;
-      line-height: 1.05;
+      font-size: clamp(2.2rem, 4vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.1;
       letter-spacing: -1px;
+      margin-bottom: 10px;
     }
 
     .hero h1 em {
       font-style: italic;
-      color: var(--accent);
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .hero-sub {
-      color: var(--muted);
-      font-size: 0.95rem;
-      line-height: 1.7;
-      margin-top: 20px;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 540px;
+      margin-bottom: 30px;
     }
 
     .hero-stats {
       display: flex;
-      gap: 32px;
-      padding-top: 32px;
+      gap: 24px;
     }
 
-    .stat { display: flex; flex-direction: column; gap: 4px; }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      flex: 1;
+      text-align: center;
+      transition: var(--transition);
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.3);
+      background: var(--surface-hover);
+      box-shadow: var(--shadow);
+    }
 
     .stat-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
       font-weight: 700;
-      color: var(--accent);
+      color: var(--text);
+      line-height: 1.2;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 4px;
+    }
 
-    /* SEARCH BAR */
+    /* SEARCH & FILTER CONTROLS */
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: rgba(22, 31, 48, 0.5);
+      border: 1px solid var(--border);
+      padding: 24px;
+      border-radius: var(--radius);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
     .search-wrap {
       position: relative;
     }
 
     .search-wrap input {
       width: 100%;
-      background: var(--surface);
+      background: var(--surface-input);
       border: 1px solid var(--border);
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1rem;
-      padding: 16px 20px 16px 50px;
-      border-radius: var(--radius);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      padding: 14px 16px 14px 44px;
+      border-radius: var(--radius-sm);
       outline: none;
-      transition: border-color 0.2s;
+      transition: var(--transition);
     }
 
-    .search-wrap input:focus { border-color: var(--accent); }
-    .search-wrap input::placeholder { color: var(--muted); }
+    .search-wrap input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+    }
+
+    .search-wrap input::placeholder {
+      color: var(--text-muted);
+    }
 
     .search-icon {
       position: absolute;
-      left: 18px;
+      left: 14px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--muted);
+      color: var(--text-muted);
       pointer-events: none;
+      transition: var(--transition);
+    }
+
+    .search-wrap input:focus + .search-icon {
+      color: var(--accent);
     }
 
     .filter-row {
       display: flex;
-      gap: 8px;
-      margin-top: 12px;
+      gap: 10px;
     }
 
-    .filter-row input, .filter-row select {
+    .filter-row input {
       flex: 1;
-      background: var(--surface);
+      background: var(--surface-input);
       border: 1px solid var(--border);
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Outfit', sans-serif;
       font-size: 0.85rem;
-      padding: 10px 14px;
-      border-radius: var(--radius);
+      padding: 12px;
+      border-radius: var(--radius-sm);
       outline: none;
-      transition: border-color 0.2s;
+      transition: var(--transition);
     }
 
-    .filter-row input:focus, .filter-row select:focus { border-color: var(--accent); }
-    .filter-row input::placeholder { color: var(--muted); }
-    .filter-row select option { background: var(--surface2); }
-
-    .btn-filter {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      padding: 10px 18px;
-      border-radius: var(--radius);
+    .filter-row input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
       cursor: pointer;
-      transition: all 0.2s;
+    }
+
+    .filter-row input:focus {
+      border-color: var(--border-focus);
+    }
+
+    .btn-filter, .btn-reset {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
       white-space: nowrap;
     }
 
-    .btn-filter:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-filter {
+      background: var(--accent);
+      color: #0b0f19;
+      border: none;
+    }
 
-    /* MAIN LAYOUT */
+    .btn-filter:hover {
+      background: #7dd3fc;
+      transform: translateY(-1px);
+    }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .btn-reset:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border-color: var(--text-muted);
+    }
+
+    /* DYNAMIC PILLES DE CATEGORIES */
+    .categories-bar {
+      max-width: 1200px;
+      margin: 25px auto 0;
+      padding: 0 40px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .categories-bar-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-right: 8px;
+      font-weight: 600;
+    }
+
+    .pills-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      background: rgba(22, 31, 48, 0.6);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .pill:hover {
+      color: var(--text);
+      border-color: var(--text-muted);
+      background: rgba(30, 41, 59, 0.6);
+    }
+
+    .pill.active {
+      background: var(--pill-color, var(--accent));
+      color: #0b0f19;
+      font-weight: 600;
+      border-color: transparent;
+      box-shadow: 0 4px 10px rgba(56, 189, 248, 0.2);
+    }
+
+    /* MAIN CONTENT */
     main {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 48px 40px;
+      padding: 40px 40px 80px;
     }
 
     .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 32px;
+      margin-bottom: 24px;
     }
 
     .section-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       font-weight: 700;
-      color: var(--text);
+      position: relative;
+      padding-bottom: 4px;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      height: 2px;
+      background: var(--accent);
     }
 
     .section-count {
-      font-size: 0.8rem;
-      color: var(--muted);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 4px 12px;
+      border-radius: 50px;
+      border: 1px solid var(--border);
     }
 
     /* ARTICLES GRID */
     .articles-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
+      gap: 24px;
     }
 
     .article-card {
       background: var(--surface);
-      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: var(--transition);
       position: relative;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
-    .article-card:hover { background: var(--surface2); }
+    .article-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(56, 189, 248, 0.25);
+      background: var(--surface-hover);
+      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.05);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
     .card-cat {
       font-size: 0.65rem;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--accent);
-      font-weight: 500;
+      color: var(--badge-color, var(--accent));
+      background: var(--badge-bg, rgba(56, 189, 248, 0.1));
+      padding: 4px 10px;
+      border-radius: 50px;
+      font-weight: 600;
+      border: 1px solid var(--badge-border, rgba(56, 189, 248, 0.2));
+    }
+
+    .card-reading-time {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .card-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.15rem;
+      font-size: 1.3rem;
       font-weight: 700;
       line-height: 1.3;
       color: var(--text);
+      transition: var(--transition);
+    }
+
+    .article-card:hover .card-title {
+      color: var(--accent);
     }
 
     .card-excerpt {
-      font-size: 0.85rem;
-      color: var(--muted);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
       line-height: 1.6;
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      min-height: 4.8em;
     }
 
     .card-footer {
@@ -300,75 +588,149 @@
       justify-content: space-between;
       align-items: center;
       margin-top: auto;
-      padding-top: 12px;
+      padding-top: 16px;
       border-top: 1px solid var(--border);
     }
 
-    .card-author {
-      font-size: 0.78rem;
-      color: var(--muted);
+    .card-author-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .card-author strong { color: var(--text); }
+    .author-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--avatar-color, var(--accent-gradient));
+      color: #0b0f19;
+      font-weight: 700;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: -0.5px;
+    }
 
-    .card-actions { display: flex; gap: 6px; }
+    .card-author {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .card-author strong {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+    }
 
     .btn-icon {
-      background: none;
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
-      color: var(--muted);
-      width: 30px;
-      height: 30px;
-      border-radius: var(--radius);
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8rem;
-      transition: all 0.2s;
+      transition: var(--transition);
     }
 
-    .btn-icon:hover { color: var(--text); border-color: var(--muted); }
-    .btn-icon.del:hover { color: var(--danger); border-color: var(--danger); }
-    .btn-icon.edit:hover { color: var(--accent); border-color: var(--accent); }
+    .btn-icon svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    .btn-icon:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--text-muted);
+      transform: translateY(-1px);
+    }
+
+    .btn-icon.edit:hover {
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    .btn-icon.del:hover {
+      color: var(--danger);
+      background: rgba(248, 113, 113, 0.1);
+      border-color: rgba(248, 113, 113, 0.3);
+    }
 
     /* EMPTY STATE */
     .empty {
       text-align: center;
-      padding: 80px 20px;
-      color: var(--muted);
+      padding: 60px 40px;
+      color: var(--text-secondary);
       background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      max-width: 600px;
+      margin: 40px auto;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
-    .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.4; }
-    .empty h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--text); margin-bottom: 8px; }
-    .empty p { font-size: 0.9rem; }
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      animation: float 3s ease-in-out infinite;
+    }
 
-    /* LOADING */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .empty h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .empty p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* LOADING SPINNER */
     .loading {
       text-align: center;
-      padding: 60px;
-      color: var(--muted);
+      padding: 80px 20px;
+      color: var(--text-secondary);
     }
 
     .spinner {
-      width: 32px;
-      height: 32px;
-      border: 2px solid var(--border);
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(56, 189, 248, 0.1);
       border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin 0.7s linear infinite;
+      animation: spin 0.8s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
       margin: 0 auto 16px;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
 
-    /* MODAL */
+    /* CUSTOM MODALS */
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(4px);
+      background: rgba(7, 9, 15, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       z-index: 200;
       display: flex;
       align-items: center;
@@ -376,479 +738,955 @@
       padding: 20px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s;
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .overlay.open { opacity: 1; pointer-events: all; }
+    .overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
 
     .modal {
-      background: var(--surface);
+      background: var(--surface-solid);
       border: 1px solid var(--border);
       width: 100%;
-      max-width: 560px;
-      border-radius: 2px;
-      transform: translateY(20px);
-      transition: transform 0.25s;
+      max-width: 580px;
+      border-radius: var(--radius);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.05);
+      transform: translateY(30px) scale(0.96);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
     }
 
-    .overlay.open .modal { transform: translateY(0); }
+    .overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
 
     .modal-header {
-      padding: 24px 28px;
+      padding: 20px 28px;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background: rgba(255, 255, 255, 0.01);
     }
 
     .modal-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: 700;
     }
 
     .btn-close {
       background: none;
       border: none;
-      color: var(--muted);
-      font-size: 1.2rem;
+      color: var(--text-muted);
+      font-size: 1.3rem;
       cursor: pointer;
       padding: 4px;
-      transition: color 0.2s;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
     }
 
-    .btn-close:hover { color: var(--text); }
+    .btn-close:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
 
-    .modal-body { padding: 28px; display: flex; flex-direction: column; gap: 16px; }
+    .modal-body {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-height: 65vh;
+      overflow-y: auto;
+    }
 
-    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
     .field label {
       font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: var(--muted);
-      font-weight: 500;
+      color: var(--text-secondary);
+      font-weight: 600;
     }
 
-    .field input, .field textarea, .field select {
-      background: var(--surface2);
+    .field input, .field textarea {
+      background: var(--surface-input);
       border: 1px solid var(--border);
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Outfit', sans-serif;
       font-size: 0.95rem;
       padding: 12px 14px;
-      border-radius: var(--radius);
+      border-radius: var(--radius-sm);
       outline: none;
-      transition: border-color 0.2s;
+      transition: var(--transition);
       resize: vertical;
     }
 
-    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); }
-    .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
-    .field select option { background: var(--surface2); }
+    .field input:focus, .field textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.1);
+    }
+
+    .field input::placeholder, .field textarea::placeholder {
+      color: var(--text-muted);
+    }
 
     .modal-footer {
       padding: 20px 28px;
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: flex-end;
-      gap: 10px;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.01);
     }
 
     .btn-cancel {
-      background: none;
+      background: transparent;
       border: 1px solid var(--border);
-      color: var(--muted);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
       padding: 10px 20px;
-      border-radius: var(--radius);
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: all 0.2s;
+      transition: var(--transition);
     }
 
-    .btn-cancel:hover { border-color: var(--muted); color: var(--text); }
+    .btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+    }
 
     .btn-submit {
-      background: var(--accent);
-      border: 1px solid var(--accent);
-      color: var(--bg);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
+      background: var(--accent-gradient);
+      border: none;
+      color: #0b0f19;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
       font-weight: 600;
       padding: 10px 24px;
-      border-radius: var(--radius);
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: all 0.2s;
+      transition: var(--transition);
+      box-shadow: 0 4px 10px rgba(56, 189, 248, 0.2);
     }
 
-    .btn-submit:hover { background: var(--accent2); }
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 15px rgba(56, 189, 248, 0.3);
+    }
 
-    /* TOAST */
+    .btn-submit.btn-danger {
+      background: var(--danger) !important;
+      color: var(--text) !important;
+      box-shadow: 0 4px 10px rgba(248, 113, 113, 0.2);
+    }
+
+    .btn-submit.btn-danger:hover {
+      background: var(--danger-hover) !important;
+      box-shadow: 0 6px 15px rgba(248, 113, 113, 0.4);
+    }
+
+    /* CUSTOM CONFIRM MODAL SPECIFICS */
+    .confirm-modal {
+      max-width: 440px;
+    }
+    
+    .confirm-text {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* TOAST SYSTEM */
     .toast-wrap {
       position: fixed;
       bottom: 32px;
       right: 32px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       z-index: 300;
     }
 
     .toast {
-      background: var(--surface2);
+      background: #161f30;
       border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
+      border-left: 4px solid var(--accent);
       color: var(--text);
-      font-size: 0.875rem;
-      padding: 14px 20px;
-      border-radius: var(--radius);
-      min-width: 260px;
-      animation: slideIn 0.3s ease;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      font-size: 0.9rem;
+      padding: 16px 20px;
+      border-radius: var(--radius-sm);
+      min-width: 300px;
+      max-width: 400px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      animation: slideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .toast.error { border-left-color: var(--danger); }
-    .toast.success { border-left-color: var(--success); }
+    .toast-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .toast-icon {
+      font-size: 1.1rem;
+    }
+
+    .toast-message {
+      font-weight: 500;
+    }
+
+    .toast-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: var(--accent-gradient);
+      width: 100%;
+      animation: toastProgress 4s linear forwards;
+    }
+
+    .toast.error {
+      border-left-color: var(--danger);
+    }
+    
+    .toast.error .toast-progress {
+      background: var(--danger);
+    }
+
+    .toast.success {
+      border-left-color: var(--success);
+    }
+    
+    .toast.success .toast-progress {
+      background: var(--success);
+    }
 
     @keyframes slideIn {
-      from { transform: translateX(40px); opacity: 0; }
+      from { transform: translateX(50px); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
 
-    /* VIEW MODAL */
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(50px); opacity: 0; }
+    }
+
+    @keyframes toastProgress {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
+
+    /* VIEW ARTICLE DETAIL MODAL */
     .view-meta {
       display: flex;
-      gap: 16px;
+      gap: 12px;
       margin-bottom: 20px;
       flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
     }
 
     .view-badge {
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      padding: 4px 10px;
+      padding: 4px 12px;
       border: 1px solid var(--border);
-      border-radius: 2px;
-      color: var(--muted);
+      border-radius: 50px;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.02);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .view-badge.cat { border-color: var(--accent); color: var(--accent); }
+    .view-badge.cat {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.05);
+    }
 
     .view-content {
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       line-height: 1.8;
-      color: var(--muted);
+      color: var(--text-secondary);
       white-space: pre-wrap;
-      max-height: 300px;
+      max-height: 45vh;
       overflow-y: auto;
+      padding-right: 8px;
     }
 
-    @media (max-width: 768px) {
-      header { padding: 0 20px; }
-      .hero { grid-template-columns: 1fr; padding: 40px 20px; gap: 32px; }
-      main { padding: 32px 20px; }
-      .articles-grid { grid-template-columns: 1fr; }
-      .hero-stats { gap: 24px; }
+    /* RESPONSIVE LAYOUT */
+    @media (max-width: 992px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 40px 20px;
+        gap: 32px;
+      }
+      header {
+        padding: 0 20px;
+      }
+      main {
+        padding: 30px 20px;
+      }
+      .categories-bar {
+        padding: 0 20px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+      .hero-stats {
+        flex-direction: column;
+        gap: 12px;
+      }
+      .filter-row {
+        flex-direction: column;
+      }
+      .btn-filter, .btn-reset {
+        justify-content: center;
+      }
+      .toast-wrap {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+      }
+      .toast {
+        min-width: 100%;
+      }
     }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">Machine<span> Blog</span></div>
-  <nav>
-    <button class="active" onclick="showAll()">Tous les articles</button>
-    <button class="btn-new" onclick="openCreate()">+ Nouvel article</button>
-  </nav>
-</header>
+  <!-- Blob glowing ambient -->
+  <div class="glow-blob"></div>
 
+  <!-- NAVIGATION HEADER -->
+  <header>
+    <a href="#" class="logo-container" onclick="showAll(); return false;">
+      <div class="logo-icon">M</div>
+      <div class="logo">Machine<span>Blog</span></div>
+    </a>
+    <nav>
+      <button class="active" id="nav-all-btn" onclick="showAll()">Tous les articles</button>
+      <button class="btn-new" onclick="openCreate()">
+        <svg style="width:12px; height:12px; margin-right:4px; fill:currentColor" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        Écrire
+      </button>
+    </nav>
+  </header>
 
-<section class="hero">
-  <div>
-    <div class="hero-label">Bienvenue sur la plateforme</div>
-    <h1>Vos articles,<br/><em>bien gérés.</em></h1>
-    <p class="hero-sub">Créez, modifiez et organisez vos articles de blog en toute simplicité.</p>
-    <div class="hero-stats">
-      <div class="stat">
-        <span class="stat-num" id="stat-total">—</span>
-        <span class="stat-label">Articles</span>
-      </div>
-      <div class="stat">
-        <span class="stat-num" id="stat-cats">—</span>
-        <span class="stat-label">Catégories</span>
-      </div>
-      <div class="stat">
-        <span class="stat-num" id="stat-authors">—</span>
-        <span class="stat-label">Auteurs</span>
-      </div>
-    </div>
-  </div>
-  <div>
-    <div class="search-wrap">
-      <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="search-input" placeholder="Rechercher un article..." oninput="handleSearch(this.value)" />
-    </div>
-    <div class="filter-row">
-      <input type="text" id="filter-cat" placeholder="Catégorie..." />
-      <input type="date" id="filter-date" />
-      <button class="btn-filter" onclick="handleFilter()">Filtrer</button>
-      <button class="btn-filter" onclick="showAll()">Reset</button>
-    </div>
-  </div>
-</section>
-
-<main>
-  <div class="section-header">
-    <span class="section-title" id="section-title">Tous les articles</span>
-    <span class="section-count" id="section-count"></span>
-  </div>
-  <div id="articles-container">
-    <div class="loading"><div class="spinner"></div>Chargement...</div>
-  </div>
-</main>
-
-<div class="overlay" id="form-overlay">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title" id="form-title">Nouvel article</span>
-      <button class="btn-close" onclick="closeForm()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="field">
-        <label>Titre *</label>
-        <input type="text" id="f-titre" placeholder="Titre de l'article" />
-      </div>
-      <div class="field">
-        <label>Auteur *</label>
-        <input type="text" id="f-auteur" placeholder="Nom de l'auteur" />
-      </div>
-      <div class="field">
-        <label>Catégorie</label>
-        <input type="text" id="f-categorie" placeholder="Ex : Tech, Culture, Sport..." />
-      </div>
-      <div class="field">
-        <label>Contenu</label>
-        <textarea id="f-contenu" rows="5" placeholder="Contenu de l'article..."></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeForm()">Annuler</button>
-      <button class="btn-submit" onclick="submitForm()">Publier</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="view-overlay">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title" id="view-title">Article</span>
-      <button class="btn-close" onclick="closeView()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="view-meta" id="view-meta"></div>
-      <div class="view-content" id="view-content"></div>
-    </div>
-  </div>
-</div>
-
-<div class="toast-wrap" id="toasts"></div>
-
-<script>
-  const API = 'http://localhost:3000/api/articles';
-  let editingId = null;
-  let searchTimer = null;
-
-  async function api(path = '', opts = {}) {
-    const res = await fetch(API + path, {
-      headers: { 'Content-Type': 'application/json' },
-      ...opts
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Erreur serveur');
-    }
-    return res.json();
-  }
-
-  async function loadArticles() {
-    try {
-      const data = await api();
-      renderArticles(data);
-      updateStats(data);
-    } catch (e) {
-      showContainer(`<div class="empty"><div class="empty-icon">⚠️</div><h3>Impossible de charger</h3><p>Vérifiez que le serveur est lancé sur localhost:3000</p></div>`);
-    }
-  }
-
-  function showAll() {
-    document.getElementById('search-input').value = '';
-    document.getElementById('filter-cat').value = '';
-    document.getElementById('filter-date').value = '';
-    document.getElementById('section-title').textContent = 'Tous les articles';
-    loadArticles();
-  }
-
-  function handleSearch(val) {
-    clearTimeout(searchTimer);
-    if (!val.trim()) { loadArticles(); return; }
-    searchTimer = setTimeout(async () => {
-      try {
-        const data = await api('/search?query=' + encodeURIComponent(val));
-        document.getElementById('section-title').textContent = `Résultats pour "${val}"`;
-        renderArticles(data);
-      } catch (e) { toast(e.message, 'error'); }
-    }, 350);
-  }
-
-  async function handleFilter() {
-    const cat = document.getElementById('filter-cat').value;
-    const date = document.getElementById('filter-date').value;
-    const params = new URLSearchParams();
-    if (cat) params.append('categorie', cat);
-    if (date) params.append('date', date);
-    try {
-      const data = await api('/filter?' + params.toString());
-      document.getElementById('section-title').textContent = 'Articles filtrés';
-      renderArticles(data);
-    } catch (e) { toast(e.message, 'error'); }
-  }
-
-  function renderArticles(articles) {
-    document.getElementById('section-count').textContent = `${articles.length} article${articles.length !== 1 ? 's' : ''}`;
-    if (!articles.length) {
-      showContainer(`<div class="empty"><div class="empty-icon">📭</div><h3>Aucun article</h3><p>Créez votre premier article avec le bouton ci-dessus.</p></div>`);
-      return;
-    }
-    const html = `<div class="articles-grid">${articles.map(a => cardHTML(a)).join('')}</div>`;
-    showContainer(html);
-  }
-
-  function cardHTML(a) {
-    const excerpt = a.contenu ? a.contenu.substring(0, 140) + (a.contenu.length > 140 ? '…' : '') : 'Aucun contenu.';
-    return `
-      <div class="article-card" onclick="viewArticle(${a.id})">
-        ${a.categorie ? `<div class="card-cat">${a.categorie}</div>` : ''}
-        <div class="card-title">${a.titre}</div>
-        <div class="card-excerpt">${excerpt}</div>
-        <div class="card-footer">
-          <div class="card-author">Par <strong>${a.auteur}</strong></div>
-          <div class="card-actions" onclick="event.stopPropagation()">
-            <button class="btn-icon edit" onclick="openEdit(${a.id})" title="Modifier">✏️</button>
-            <button class="btn-icon del" onclick="deleteArticle(${a.id})" title="Supprimer">🗑</button>
-          </div>
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div>
+      <div class="hero-label">CLEEROUTE Workspace</div>
+      <h1>Partagez vos idées, <br/><em>sans limites.</em></h1>
+      <p class="hero-sub">Une interface moderne connectée à un backend performant MySQL pour stocker, filtrer et gérer tous vos écrits.</p>
+      
+      <!-- Stats interactives -->
+      <div class="hero-stats">
+        <div class="stat-card" onclick="showAll()" title="Afficher tous les articles">
+          <span class="stat-num" id="stat-total">—</span>
+          <span class="stat-label">Écrits</span>
         </div>
-      </div>`;
-  }
+        <div class="stat-card" onclick="scrollToPills()" title="Filtrer par catégorie">
+          <span class="stat-num" id="stat-cats">—</span>
+          <span class="stat-label">Catégories</span>
+        </div>
+        <div class="stat-card" onclick="focusSearch()" title="Rechercher des auteurs">
+          <span class="stat-num" id="stat-authors">—</span>
+          <span class="stat-label">Auteurs</span>
+        </div>
+      </div>
+    </div>
 
-  function showContainer(html) {
-    document.getElementById('articles-container').innerHTML = html;
-  }
+    <!-- Panneau de filtres -->
+    <div class="controls-panel">
+      <div class="search-wrap">
+        <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Rechercher par titre, auteur, contenu, tags..." oninput="handleSearch(this.value)" />
+      </div>
+      <div class="filter-row">
+        <!-- Champ catégorie textuel -->
+        <input type="text" id="filter-cat" placeholder="Catégorie libre..." />
+        <input type="date" id="filter-date" title="Filtrer par date de création" />
+        <button class="btn-filter" onclick="handleFilter()">
+          <svg style="width:14px; height:14px; fill:currentColor" viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+          Filtrer
+        </button>
+        <button class="btn-reset" onclick="showAll()">Réinitialiser</button>
+      </div>
+    </div>
+  </section>
 
-  function updateStats(articles) {
-    document.getElementById('stat-total').textContent = articles.length;
-    const cats = new Set(articles.map(a => a.categorie).filter(Boolean));
-    document.getElementById('stat-cats').textContent = cats.size || 0;
-    const authors = new Set(articles.map(a => a.auteur).filter(Boolean));
-    document.getElementById('stat-authors').textContent = authors.size || 0;
-  }
+  <!-- BARRE DE CATEGORIES DYNAMIQUES (PILLS) -->
+  <section class="categories-bar">
+    <div class="categories-bar-label">Tags populaires :</div>
+    <div class="pills-wrapper" id="category-pills">
+      <!-- Rempli par JavaScript -->
+    </div>
+  </section>
 
-  async function viewArticle(id) {
-    try {
-      const a = await api('/' + id);
-      document.getElementById('view-title').textContent = a.titre;
-      document.getElementById('view-meta').innerHTML = `
-        <span class="view-badge">Par ${a.auteur}</span>
-        ${a.categorie ? `<span class="view-badge cat">${a.categorie}</span>` : ''}
-        ${a.created_at ? `<span class="view-badge">${new Date(a.created_at).toLocaleDateString('fr-FR')}</span>` : ''}
-      `;
-      document.getElementById('view-content').textContent = a.contenu || 'Aucun contenu.';
-      document.getElementById('view-overlay').classList.add('open');
-    } catch (e) { toast(e.message, 'error'); }
-  }
+  <!-- LISTE DES ARTICLES -->
+  <main>
+    <div class="section-header">
+      <span class="section-title" id="section-title">Derniers articles</span>
+      <span class="section-count" id="section-count">0 article</span>
+    </div>
+    <div id="articles-container">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Récupération des articles depuis la base de données...</p>
+      </div>
+    </div>
+  </main>
 
-  function closeView() { document.getElementById('view-overlay').classList.remove('open'); }
+  <!-- MODAL : FORMULAIRE (CREATION / EDITION) -->
+  <div class="overlay" id="form-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title" id="form-title">Nouvel article</span>
+        <button class="btn-close" onclick="closeForm()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label for="f-titre">Titre de l'article *</label>
+          <input type="text" id="f-titre" placeholder="Saisissez un titre percutant..." required />
+        </div>
+        <div class="field">
+          <label for="f-auteur">Auteur de l'article *</label>
+          <input type="text" id="f-auteur" placeholder="Votre nom ou pseudonyme..." required />
+        </div>
+        <div class="field">
+          <label for="f-categorie">Catégorie</label>
+          <input type="text" id="f-categorie" placeholder="Ex: Technologie, Design, Recette, News..." />
+        </div>
+        <div class="field">
+          <label for="f-tags">Tags (séparés par des virgules)</label>
+          <input type="text" id="f-tags" placeholder="Ex: js, mysql, cleeroute..." />
+        </div>
+        <div class="field">
+          <label for="f-contenu">Contenu de l'article</label>
+          <textarea id="f-contenu" rows="6" placeholder="Rédigez le corps de votre article ici (Markdown supporté de façon textuelle)..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeForm()">Annuler</button>
+        <button class="btn-submit" onclick="submitForm()">Publier</button>
+      </div>
+    </div>
+  </div>
 
-  function openCreate() {
-    editingId = null;
-    document.getElementById('form-title').textContent = 'Nouvel article';
-    document.getElementById('f-titre').value = '';
-    document.getElementById('f-auteur').value = '';
-    document.getElementById('f-categorie').value = '';
-    document.getElementById('f-contenu').value = '';
-    document.querySelector('.btn-submit').textContent = 'Publier';
-    document.getElementById('form-overlay').classList.add('open');
-  }
+  <!-- MODAL : LECTURE DE L'ARTICLE -->
+  <div class="overlay" id="view-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title" id="view-title">Lecture</span>
+        <button class="btn-close" onclick="closeView()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="view-meta" id="view-meta">
+          <!-- Métadonnées de l'article insérées ici -->
+        </div>
+        <div class="view-content" id="view-content">
+          <!-- Contenu complet inséré ici -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeView()">Fermer</button>
+      </div>
+    </div>
+  </div>
 
-  async function openEdit(id) {
-    try {
-      const a = await api('/' + id);
-      editingId = id;
-      document.getElementById('form-title').textContent = 'Modifier l\'article';
-      document.getElementById('f-titre').value = a.titre || '';
-      document.getElementById('f-auteur').value = a.auteur || '';
-      document.getElementById('f-categorie').value = a.categorie || '';
-      document.getElementById('f-contenu').value = a.contenu || '';
-      document.querySelector('.btn-submit').textContent = 'Enregistrer';
-      document.getElementById('form-overlay').classList.add('open');
-    } catch (e) { toast(e.message, 'error'); }
-  }
+  <!-- MODAL DE CONFIRMATION DE SUPPRESSION (REPLACE CONFIRM BRUT) -->
+  <div class="overlay" id="confirm-overlay">
+    <div class="modal confirm-modal">
+      <div class="modal-header">
+        <span class="modal-title">Confirmation</span>
+        <button class="btn-close" onclick="closeConfirm()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-text">Voulez-vous vraiment supprimer cet article de la base de données ? Cette opération est irréversible.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeConfirm()">Annuler</button>
+        <button class="btn-submit btn-danger" id="confirm-delete-btn">Confirmer la suppression</button>
+      </div>
+    </div>
+  </div>
 
-  function closeForm() { document.getElementById('form-overlay').classList.remove('open'); }
+  <!-- SYSTEME DE TOASTS -->
+  <div class="toast-wrap" id="toasts"></div>
 
-  async function submitForm() {
-    const body = {
-      titre: document.getElementById('f-titre').value.trim(),
-      auteur: document.getElementById('f-auteur').value.trim(),
-      categorie: document.getElementById('f-categorie').value.trim(),
-      contenu: document.getElementById('f-contenu').value.trim(),
-    };
+  <!-- LOGIQUE APPLICATIVE FRONTEND -->
+  <script>
+    const API = '/api/articles';
+    let editingId = null;
+    let searchTimer = null;
+    let deleteTargetId = null;
+    let activeCategoryPill = '';
+    let allArticlesList = [];
 
-    if (!body.titre || !body.auteur) {
-      toast('Titre et auteur sont obligatoires', 'error');
-      return;
+    // Helper pour formater les requêtes HTTP
+    async function api(path = '', opts = {}) {
+      const res = await fetch(API + path, {
+        headers: { 'Content-Type': 'application/json' },
+        ...opts
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || 'Une erreur serveur s\'est produite');
+      }
+      return data;
     }
 
-    try {
-      if (editingId) {
-        await api('/' + editingId, { method: 'PUT', body: JSON.stringify(body) });
-        toast('Article mis à jour ✓', 'success');
-      } else {
-        await api('', { method: 'POST', body: JSON.stringify(body) });
-        toast('Article publié ✓', 'success');
+    // Chargement initial des articles
+    async function loadArticles() {
+      try {
+        const data = await api();
+        allArticlesList = data;
+        renderArticles(data);
+        updateStats(data);
+        renderCategoryPills(data);
+      } catch (e) {
+        showContainer(`
+          <div class="empty">
+            <div class="empty-icon">⚠️</div>
+            <h3>Impossible de contacter la base de données</h3>
+            <p>Vérifiez que le serveur Node.js est bien en cours d'exécution sur le port 3000 et que la base de données MySQL est active.</p>
+            <button class="btn-filter" style="margin-top: 15px; display: inline-flex; align-self: center" onclick="loadArticles()">Réessayer</button>
+          </div>
+        `);
       }
-      closeForm();
+    }
+
+    // Réinitialisation de la recherche et affichage complet
+    function showAll() {
+      document.getElementById('search-input').value = '';
+      document.getElementById('filter-cat').value = '';
+      document.getElementById('filter-date').value = '';
+      document.getElementById('section-title').textContent = 'Derniers articles';
+      activeCategoryPill = '';
+      
+      const pills = document.querySelectorAll('#category-pills .pill');
+      pills.forEach(p => p.classList.remove('active'));
+      const allPill = document.querySelector('#category-pills .pill:first-child');
+      if (allPill) allPill.classList.add('active');
+
       loadArticles();
-    } catch (e) { toast(e.message, 'error'); }
-  }
+    }
 
-  async function deleteArticle(id) {
-    if (!confirm('Supprimer cet article ?')) return;
-    try {
-      await api('/' + id, { method: 'DELETE' });
-      toast('Article supprimé', 'success');
-      loadArticles();
-    } catch (e) { toast(e.message, 'error'); }
-  }
+    // Recherche instantanée avec debounce
+    function handleSearch(val) {
+      clearTimeout(searchTimer);
+      if (!val.trim()) {
+        loadArticles();
+        return;
+      }
+      searchTimer = setTimeout(async () => {
+        try {
+          const data = await api('/search?query=' + encodeURIComponent(val));
+          document.getElementById('section-title').textContent = `Résultats pour "${val}"`;
+          renderArticles(data);
+        } catch (e) {
+          toast(e.message, 'error');
+        }
+      }, 350);
+    }
 
-  function toast(msg, type = 'info') {
-    const el = document.createElement('div');
-    el.className = `toast ${type}`;
-    el.textContent = msg;
-    document.getElementById('toasts').appendChild(el);
-    setTimeout(() => el.remove(), 3500);
-  }
+    // Filtrage multicritères
+    async function handleFilter() {
+      const cat = document.getElementById('filter-cat').value;
+      const date = document.getElementById('filter-date').value;
+      const params = new URLSearchParams();
+      if (cat) params.append('categorie', cat);
+      if (date) params.append('date', date);
+      
+      try {
+        const data = await api('/filter?' + params.toString());
+        document.getElementById('section-title').textContent = 'Articles filtrés';
+        renderArticles(data);
+        
+        // Mettre à jour l'état actif des pills si besoin
+        const pills = document.querySelectorAll('#category-pills .pill');
+        pills.forEach(p => {
+          if (cat && p.textContent.toLowerCase() === cat.toLowerCase()) {
+            p.classList.add('active');
+          } else {
+            p.classList.remove('active');
+          }
+        });
+      } catch (e) {
+        toast(e.message, 'error');
+      }
+    }
 
-  document.getElementById('form-overlay').addEventListener('click', function(e) {
-    if (e.target === this) closeForm();
-  });
-  document.getElementById('view-overlay').addEventListener('click', function(e) {
-    if (e.target === this) closeView();
-  });
+    // Filtrage rapide via les pills de catégories
+    async function filterByPill(cat) {
+      activeCategoryPill = cat;
+      const pills = document.querySelectorAll('#category-pills .pill');
+      pills.forEach(p => p.classList.remove('active'));
+      
+      if (!cat) {
+        showAll();
+        return;
+      }
 
-  loadArticles();
-</script>
+      event.currentTarget.classList.add('active');
+      document.getElementById('filter-cat').value = cat;
+
+      try {
+        const data = await api('/filter?categorie=' + encodeURIComponent(cat));
+        document.getElementById('section-title').textContent = `Articles dans "${cat}"`;
+        renderArticles(data);
+      } catch (e) {
+        toast(e.message, 'error');
+      }
+    }
+
+    // Hash d'un nom de catégorie vers une couleur HSL unique
+    function getCategoryColor(category) {
+      if (!category) return '#38bdf8';
+      let hash = 0;
+      for (let i = 0; i < category.length; i++) {
+        hash = category.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const h = Math.abs(hash % 360);
+      return `hsl(${h}, 70%, 65%)`;
+    }
+
+    // Estimation du temps de lecture
+    function calculateReadingTime(text) {
+      if (!text) return '1 min';
+      const words = text.trim().split(/\s+/).length;
+      const minutes = Math.ceil(words / 200); // 200 mots par minute en moyenne
+      return `${minutes} min`;
+    }
+
+    // Avatar composé à partir des initiales de l'auteur
+    function getAuthorAvatar(author) {
+      if (!author) return 'M';
+      const parts = author.trim().split(/\s+/);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return author.substring(0, 2).toUpperCase();
+    }
+
+    // Génération et injection des pills de catégories
+    function renderCategoryPills(articles) {
+      const cats = new Set(articles.map(a => a.categorie).filter(Boolean));
+      const container = document.getElementById('category-pills');
+      if (!container) return;
+
+      let html = `<button class="pill ${!activeCategoryPill ? 'active' : ''}" onclick="filterByPill('')">Tous</button>`;
+      cats.forEach(cat => {
+        const color = getCategoryColor(cat);
+        const isActive = activeCategoryPill.toLowerCase() === cat.toLowerCase();
+        html += `
+          <button class="pill ${isActive ? 'active' : ''}" 
+                  onclick="filterByPill('${cat}')" 
+                  style="--pill-color: ${color}; border-color: ${isActive ? 'transparent' : color}44">
+            ${cat}
+          </button>`;
+      });
+      container.innerHTML = html;
+    }
+
+    // Affichage de la liste des articles
+    function renderArticles(articles) {
+      const countEl = document.getElementById('section-count');
+      countEl.textContent = `${articles.length} article${articles.length !== 1 ? 's' : ''}`;
+      
+      if (!articles.length) {
+        showContainer(`
+          <div class="empty">
+            <div class="empty-icon">📭</div>
+            <h3>Aucun article trouvé</h3>
+            <p>Essayez de réinitialiser la recherche ou créez un nouvel article pour alimenter le blog.</p>
+          </div>
+        `);
+        return;
+      }
+      
+      const html = `<div class="articles-grid">${articles.map(a => cardHTML(a)).join('')}</div>`;
+      showContainer(html);
+    }
+
+    // Template HTML d'une carte d'article
+    function cardHTML(a) {
+      const readingTime = calculateReadingTime(a.contenu);
+      const avatarInitials = getAuthorAvatar(a.auteur);
+      const catColor = getCategoryColor(a.categorie);
+      const excerpt = a.contenu ? a.contenu.substring(0, 130) + (a.contenu.length > 130 ? '...' : '') : 'Aucun contenu rédigé pour le moment.';
+      
+      // Construction HTML des tags
+      let tagsHTML = '';
+      if (a.tags) {
+        const tagList = a.tags.split(',').map(t => t.trim()).filter(Boolean);
+        if (tagList.length > 0) {
+          tagsHTML = `
+            <div class="card-tags-list" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+              ${tagList.map(tag => `<span class="card-tag-item" style="font-size: 0.68rem; font-weight: 500; color: ${catColor}; background: ${catColor}08; border: 1px solid ${catColor}22; padding: 2px 8px; border-radius: 4px;">#${tag}</span>`).join('')}
+            </div>
+          `;
+        }
+      }
+      
+      return `
+        <div class="article-card" onclick="viewArticle(${a.id})">
+          <div class="card-top">
+            <span class="card-cat" style="--badge-color: ${catColor}; --badge-bg: ${catColor}15; --badge-border: ${catColor}33">
+              ${a.categorie || 'Général'}
+            </span>
+            <span class="card-reading-time">
+              <svg style="width:12px; height:12px; fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
+              ${readingTime}
+            </span>
+          </div>
+          <div class="card-title">${a.titre}</div>
+          <div class="card-excerpt">${excerpt}</div>
+          ${tagsHTML}
+          
+          <div class="card-footer" onclick="event.stopPropagation()">
+            <div class="card-author-info">
+              <div class="author-avatar" style="--avatar-color: ${catColor}">${avatarInitials}</div>
+              <div class="card-author">Par <strong>${a.auteur}</strong></div>
+            </div>
+            <div class="card-actions">
+              <button class="btn-icon edit" onclick="openEdit(${a.id})" title="Modifier l'article">
+                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+              </button>
+              <button class="btn-icon del" onclick="deleteArticle(${a.id})" title="Supprimer l'article">
+                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function showContainer(html) {
+      document.getElementById('articles-container').innerHTML = html;
+    }
+
+    // Mise à jour du tableau de bord (statistiques en haut)
+    function updateStats(articles) {
+      document.getElementById('stat-total').textContent = articles.length;
+      const cats = new Set(articles.map(a => a.categorie).filter(Boolean));
+      document.getElementById('stat-cats').textContent = cats.size || 0;
+      const authors = new Set(articles.map(a => a.auteur).filter(Boolean));
+      document.getElementById('stat-authors').textContent = authors.size || 0;
+    }
+
+    // Affichage des détails d'un article
+    async function viewArticle(id) {
+      try {
+        const a = await api('/' + id);
+        const catColor = getCategoryColor(a.categorie);
+        const formattedDate = a.created_at ? new Date(a.created_at).toLocaleDateString('fr-FR', {
+          year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        }) : 'Non définie';
+        
+        let tagsHTML = '';
+        if (a.tags) {
+          const tagList = a.tags.split(',').map(t => t.trim()).filter(Boolean);
+          tagsHTML = tagList.map(tag => `
+            <span class="view-badge" style="border-color: ${catColor}44; color: ${catColor}; background: ${catColor}08">#${tag}</span>
+          `).join('');
+        }
+
+        document.getElementById('view-title').textContent = a.titre;
+        document.getElementById('view-meta').innerHTML = `
+          <span class="view-badge"><svg style="width:12px; height:12px; fill:currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Par ${a.auteur}</span>
+          <span class="view-badge cat" style="--accent: ${catColor}"><svg style="width:12px; height:12px; fill:currentColor" viewBox="0 0 24 24"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/></svg>${a.categorie || 'Général'}</span>
+          <span class="view-badge"><svg style="width:12px; height:12px; fill:currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>Publié le ${formattedDate}</span>
+          <span class="view-badge"><svg style="width:12px; height:12px; fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>${calculateReadingTime(a.contenu)} de lecture</span>
+          ${tagsHTML}
+        `;
+        document.getElementById('view-content').textContent = a.contenu || 'Aucun contenu rédigé.';
+        document.getElementById('view-overlay').classList.add('open');
+      } catch (e) {
+        toast(e.message, 'error');
+      }
+    }
+
+    function closeView() {
+      document.getElementById('view-overlay').classList.remove('open');
+    }
+
+    // Ouverture du formulaire en création
+    function openCreate() {
+      editingId = null;
+      document.getElementById('form-title').textContent = 'Nouvel article';
+      document.getElementById('f-titre').value = '';
+      document.getElementById('f-auteur').value = '';
+      document.getElementById('f-categorie').value = '';
+      document.getElementById('f-tags').value = '';
+      document.getElementById('f-contenu').value = '';
+      document.querySelector('.btn-submit').textContent = 'Publier';
+      document.getElementById('form-overlay').classList.add('open');
+      document.getElementById('f-titre').focus();
+    }
+
+    // Ouverture du formulaire en édition
+    async function openEdit(id) {
+      try {
+        const a = await api('/' + id);
+        editingId = id;
+        document.getElementById('form-title').textContent = 'Modifier l\'article';
+        document.getElementById('f-titre').value = a.titre || '';
+        document.getElementById('f-auteur').value = a.auteur || '';
+        document.getElementById('f-categorie').value = a.categorie || '';
+        document.getElementById('f-tags').value = a.tags || '';
+        document.getElementById('f-contenu').value = a.contenu || '';
+        document.querySelector('.btn-submit').textContent = 'Enregistrer les modifications';
+        document.getElementById('form-overlay').classList.add('open');
+        document.getElementById('f-titre').focus();
+      } catch (e) {
+        toast(e.message, 'error');
+      }
+    }
+
+    function closeForm() {
+      document.getElementById('form-overlay').classList.remove('open');
+    }
+
+    // Soumission du formulaire (creation ou edition)
+    async function submitForm() {
+      const body = {
+        titre: document.getElementById('f-titre').value.trim(),
+        auteur: document.getElementById('f-auteur').value.trim(),
+        categorie: document.getElementById('f-categorie').value.trim(),
+        tags: document.getElementById('f-tags').value.trim(),
+        contenu: document.getElementById('f-contenu').value.trim(),
+      };
+
+      if (!body.titre || !body.auteur) {
+        toast('Le titre et l\'auteur sont obligatoires', 'error');
+        return;
+      }
+
+      try {
+        if (editingId) {
+          await api('/' + editingId, { method: 'PUT', body: JSON.stringify(body) });
+          toast('L\'article a été mis à jour avec succès !', 'success');
+        } else {
+          await api('', { method: 'POST', body: JSON.stringify(body) });
+          toast('Votre article a été publié avec succès !', 'success');
+        }
+        closeForm();
+        loadArticles();
+      } catch (e) {
+        toast(e.message, 'error');
+      }
+    }
+
+    // Déclencheur du modal de suppression personnalisé
+    function deleteArticle(id) {
+      deleteTargetId = id;
+      document.getElementById('confirm-overlay').classList.add('open');
+    }
+
+    function closeConfirm() {
+      document.getElementById('confirm-overlay').classList.remove('open');
+      deleteTargetId = null;
+    }
+
+    // Listener du bouton du modal de suppression
+    document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+      if (!deleteTargetId) return;
+      try {
+        const res = await api('/' + deleteTargetId, { method: 'DELETE' });
+        toast(res.message || 'L\'article a été supprimé', 'success');
+        closeConfirm();
+        loadArticles();
+      } catch (e) {
+        toast(e.message, 'error');
+      }
+    });
+
+    // Affichage d'un toast notification premium
+    function toast(msg, type = 'info') {
+      const wrapper = document.getElementById('toasts');
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      
+      let icon = 'ℹ️';
+      if (type === 'success') icon = '✅';
+      if (type === 'error') icon = '❌';
+
+      el.innerHTML = `
+        <div class="toast-content">
+          <span class="toast-icon">${icon}</span>
+          <span class="toast-message">${msg}</span>
+        </div>
+        <div class="toast-progress"></div>
+      `;
+      wrapper.appendChild(el);
+
+      // Animation de disparition
+      setTimeout(() => {
+        el.style.animation = 'slideOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards';
+        setTimeout(() => el.remove(), 300);
+      }, 4000);
+    }
+
+    // Interactions auxiliaires UI
+    function scrollToPills() {
+      const element = document.querySelector('.categories-bar');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function focusSearch() {
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) {
+        searchInput.focus();
+        searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    // Fermeture des modals en cliquant en dehors
+    document.getElementById('form-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeForm();
+    });
+    document.getElementById('view-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeView();
+    });
+    document.getElementById('confirm-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeConfirm();
+    });
+
+    // Initialisation
+    loadArticles();
+  </script>
 </body>
 </html>
